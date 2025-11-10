@@ -6,7 +6,7 @@ An interactive React application designed for healthcare professionals to effici
 
 ### 🎯 Core Functionality
 - ✅ **Progress Bar Navigation** - Visual progress indicator with 13 organized sections
-- ✅ **Automatic PDF Loading** - Default PDF (`Fillable_form.pdf`) loads on startup
+- ✅ **Automatic PDF Loading** - Default PDF (`form.pdf`) loads on startup
 - ✅ **PDF Field Detection** - Automatically detects and maps all PDF form fields
 - ✅ **Voice Transcription** - Real-time speech-to-text for Sections 7 & 8 (Web Speech API)
 - ✅ **Section-Based Form** - Organized into 13 logical sections matching the CNESST form structure
