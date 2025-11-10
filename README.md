@@ -124,6 +124,11 @@ The app will open at `http://localhost:3000`
 - Form fields are flattened (converted to static text)
 - Downloads as `medical-examination-filled.pdf`
 
+#### Save as Word
+- Click on the print icon in the PDF Viewer
+- Destination -> saved as PDF
+- Right click on the saved PDF and open it as DOCX
+  
 #### Save as JSON
 - Click "Sauvegarder (JSON)" button
 - Exports all form data with PDF field names as keys
