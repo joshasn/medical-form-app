@@ -93,8 +93,9 @@ The Medical Form Application is a React-based web application designed for healt
 ```
 medical-form-app/
 ├── public/
-│   ├── Form_fillable.pdf          # Fillable PDF template
-│   ├── Form_filled.pdf            # Default PDF (currently loaded)
+│   ├── Fillable_form.pdf          # Default fillable PDF template (currently loaded)
+│   ├── Form.pdf                   # Alternative PDF template
+│   ├── Form_filled.pdf            # Alternative PDF template
 │   └── 204_MI_1-5.pdf            # Alternative PDF template
 │
 ├── src/
@@ -151,8 +152,21 @@ The application uses React hooks for state management:
 
 - **Visual Progress Bar**: Shows current section and completion status
 - **Section Navigation**: Numbered buttons to jump between sections
-- **Section Validation**: Validates all fields before allowing progression (currently disabled for free navigation)
-- **13 Sections Total**: Worker info, Doctor info, Mandate, Diagnostics, Interview, Identification, History, Medication, Evolution, Subjective, Physical Exam, Paraclinical, Conclusion, Sequelae
+- **Section Validation**: Validates all fields before allowing progression (currently disabled for free navigation - users can access any section)
+- **13 Sections Total**: 
+  1. Worker Information (Renseignements sur le travailleur)
+  2. Doctor Information (Renseignements sur le médecin)
+  3. Mandate (Mandat de l'évaluation)
+  4. Identification (Age, dominance, employment)
+  5. Antécédents (History)
+  6. Medication (Médication)
+  7. Historique de faits et évolution (History of facts and evolution)
+  8. Questionnaire subjectif (Subjective questionnaire)
+  9. Examen Physique (Physical Exam)
+  10. Examens paracliniques (Paraclinical Exams)
+  11. Conclusion
+  12. Séquelles (Sequelae)
+  13. Signature
 
 ### 2. Voice Transcription
 
@@ -162,16 +176,27 @@ The application uses React hooks for state management:
 - **Language Selection**: French (France/Canada) and English (US/Canada)
 - **Continuous Recording**: Automatically restarts to prevent 6-second timeout
 - **Confidence Filtering**: Filters out low-confidence interim results
+- **Text Splitting (Section 7)**: When `historiqueFaits` reaches character limit, voice automatically continues to "Suite" field (`historiqueFaitsContinue`)
+- **Text Merging**: When space becomes available in `historiqueFaits`, text from "Suite" field automatically merges back
 
 ### 3. PDF Field Detection & Mapping
 
 - **Automatic Detection**: Detects all form fields in the PDF on load
+- **Default PDF**: Uses `Fillable_form.pdf` as the default PDF (can be changed to `Form.pdf` or `Form_filled.pdf`)
+- **PDF Viewer Toggle**: Button to show/hide PDF viewer (default: visible)
 - **Field Type Detection**: Identifies text fields, dropdowns, checkboxes
-- **Dynamic Mapping**: Maps React form field names to PDF field names
+- **Dynamic Mapping**: Maps React form field names to PDF field names using `useMemo` computed `fieldMapping`
 - **Fuzzy Matching**: Handles variations in field names (case-insensitive, partial matches)
-- **Field Display**: Option to show PDF field names next to form inputs
+- **Field Display**: Toggle checkbox "Afficher les champs PDF" to show PDF field names next to form inputs
+- **Module Field Mapping**: Special handling for Section 9 module data with extensive pattern matching and French translations
 
-### 4. Section 5: Antécédents (History)
+### 4. Section 4: Identification
+
+- **Age Field**: Maps to `age_identification` PDF field
+- **Worker Information**: Name, first name, health insurance number, birth date, address, phone, file number
+- **Event Dates**: Origin event date and recurrence date
+
+### 5. Section 5: Antécédents (History)
 
 - **Custom Layout**: Matches PDF design exactly
 - **Multiple Sub-sections**: Medical, Surgical, Lesion, Accidents (CNESST, SAAQ, Autres), Allergies, Substance use
@@ -179,25 +204,51 @@ The application uses React hooks for state management:
   - SAAQ → `accidentsAutres` (PDF field)
   - Autres → `autres` (PDF field)
   - CNESST → `accidentsCNESST` (PDF field)
+- **Dropdown Fields**: 
+  - `tabac` (Tobacco): Dropdown with options, maps to PDF field `tabac`
+  - `cannabis`: Dropdown with options, maps to PDF field `cannabis`
+  - `alcool` (Alcohol): Dropdown with options, maps to PDF field `alcool`
+- **Data Capture**: Selected dropdown values are properly captured and exported to both PDF and JSON
 
-### 5. Section 9: Examen Physique (Physical Exam)
+### 6. Section 9: Examen Physique (Physical Exam)
 
 - **Module Selection**: Checkboxes for different body parts/assessments
 - **Quick Templates**: Pre-filled templates for common examinations
-- **General Observation**: Weight, height, dominance, general observation textarea
+  - **Behavior**: Clicking a template selects its modules; clicking again unselects it
+  - **Replacement (Not Merge)**: Selecting a different template replaces the previous selection (doesn't merge)
+  - **Templates Available**:
+    - Upper Extremity (Cervical Spine, Muscle Atrophy)
+    - Upper Proximal (Cervical Spine, Muscle Atrophy)
+    - Upper Distal (Cervical Spine, Muscle Atrophy)
+    - Lower Proximal (Lumbar Spine, Muscle Atrophy)
+    - Lower Distal (Lumbar Spine, Muscle Atrophy)
+    - Bilateral Upper (Cervical Spine, Muscle Atrophy)
+    - Bilateral Lower (Lumbar Spine, Muscle Atrophy)
+- **General Observation**: Weight, height, dominance (`dominance_examen` PDF field), general observation textarea
 - **Dynamic Tables**: Conditionally rendered tables based on selected modules:
-  - Cervical Spine
-  - Shoulders
-  - Elbows
-  - Wrists/Hands
-  - Lumbar Spine
-  - Hips
-  - Knees
-  - Feet/Ankles
+  - Cervical Spine (Range of Motion, Palpation, Inspection, Radicular Maneuvers)
+  - Shoulders (Range of Motion, Palpation, Inspection, Rotator Cuff Tests, Biceps Tests, Instability Tests, Labrum Tests, AC Joint Tests)
+  - Elbows (Range of Motion, Palpation, Inspection, Ligamentous Tests)
+  - Wrists/Hands (Range of Motion, Palpation, Inspection, Specialized Tests)
+  - Lumbar Spine (Range of Motion, Palpation, Inspection, Radicular Maneuvers)
+  - Hips (Range of Motion, Palpation, Inspection, Specialized Tests including Trendelenburg)
+  - Knees (Range of Motion, Palpation, Inspection, Ligamentous Tests, Meniscal Tests, Patellar Tests)
+  - Feet/Ankles (Range of Motion, Palpation, Inspection, Tendon Tests)
   - Muscle Atrophy (with auto-calculated differences)
-- **PDF Table Generation**: Draws Range of Motion tables on PDF for Cervical Spine and Lumbar Spine
+  - Neurovascular Assessment (Forces, Sensibilities, Reflexes, Pulses)
+- **Field Labels**: All table fields display short descriptive labels for clarity
+- **PDF Field Mapping**: Module data is processed using `processModuleDataToPdfFieldsJSON` function, which:
+  - Maps nested module data (e.g., `hips.specializedTests.trendelenburg.right`) to PDF field names
+  - Uses fuzzy matching to find appropriate PDF fields
+  - Processes all modules with data (not just selected ones) when downloading PDF after JSON import
+- **Table Data Export**: All module table data is properly linked to PDF fields when downloading PDF or saving as JSON
 
-### 6. Section 12: Séquelles (Sequelae)
+### 7. Section 10: Examens Paracliniques (Paraclinical Exams)
+
+- **Field Mapping**: `paraclinicalExams` maps to `examensParacliniques` PDF field
+- **Textarea Input**: Single textarea for all paraclinical exam information
+
+### 8. Section 12: Séquelles (Sequelae)
 
 - **Current Sequelae Table**: Dynamic 2-row table with:
   - Code (maps to `code_de_sequelle1`, `sequelaCode1`, etc.)
@@ -213,8 +264,11 @@ The application uses React hooks for state management:
 #### PDF Export
 - **Field Transformation**: Converts form field names to PDF field names
 - **Direct Field Preservation**: Preserves fields that already match PDF field names
-- **Table Drawing**: Draws physical exam tables on PDF using pdf-lib primitives
+- **Module Data Processing**: Uses `processModuleDataToPdfFieldsJSON` to process all modules with data (including imported JSON data)
+- **Table Drawing**: Draws physical exam tables on PDF using pdf-lib primitives (currently only Range of Motion for Cervical Spine and Lumbar Spine)
 - **Character Encoding**: Normalizes text for WinAnsi encoding compatibility
+- **PDF Flattening**: When downloading, PDF is flattened (form fields converted to static text) - PDF remains editable when viewing, only flattened on download
+- **Flattening Control**: Uses `shouldFlatten` parameter - `true` for downloads, `false` for viewing
 
 #### JSON Export
 - **Same Transformation**: Uses same field mapping as PDF export
@@ -222,13 +276,16 @@ The application uses React hooks for state management:
 - **Section 12 Fields**: Always included even if not detected as PDFTextField
 - **Internal Fields Filtered**: Removes internal sequela form fields (`sequelaCode*`, etc.)
 
-### 8. JSON Import
+### 9. JSON Import
 
 - **File Upload**: Select JSON file to import
 - **Field Mapping Preview**: Shows mapped and unmapped fields
 - **Automatic Mapping**: Uses fuzzy matching to map JSON keys to form fields
 - **Section 12 Parsing**: Parses combined format strings and individual fields
-- **PDF Auto-fill**: Automatically fills PDF after import
+- **Module Data Parsing**: Automatically parses fallback module data fields (e.g., `hipsspecializedTeststrendelenburgright`) and reconstructs nested structure
+- **Module Auto-Selection**: Automatically selects modules that have imported data
+- **PDF Auto-fill**: Automatically fills PDF after import (without flattening, so PDF remains editable)
+- **Data Validation**: Skips suspicious data (e.g., long trendelenburg text that might be from wrong field)
 
 ---
 
@@ -425,7 +482,7 @@ The application will open at `http://localhost:3000`
 
 ### Basic Workflow
 
-1. **PDF Loads Automatically**: `Form_filled.pdf` loads on application start
+1. **PDF Loads Automatically**: `Fillable_form.pdf` loads on application start
 2. **Fill Form Sections**: Navigate through sections using progress bar
 3. **Voice Recording** (Sections 7 & 8):
    - Click "Enregistrer" to start recording
@@ -451,6 +508,8 @@ The application will open at `http://localhost:3000`
 4. **View Transcript**: Left panel shows timestamped transcript entries
 5. **Stop Recording**: Click "Arrêter" button
 6. **Clear Transcript**: Click trash icon to clear transcript
+7. **Text Splitting (Section 7)**: When `historiqueFaits` field reaches character limit, voice automatically continues to "Suite" field
+8. **Text Merging**: When space becomes available in `historiqueFaits`, text from "Suite" field automatically merges back
 
 **Note**: Recording automatically restarts if browser stops temporarily (prevents 6-second timeout)
 
@@ -458,12 +517,16 @@ The application will open at `http://localhost:3000`
 
 1. **Select Modules**: Check boxes for body parts you want to examine
 2. **Quick Templates**: Click template buttons to pre-fill common values
+   - **Toggle Behavior**: Clicking a template again unselects it
+   - **Replacement**: Selecting a different template replaces the previous selection (doesn't merge)
 3. **Fill Tables**: For each selected module, fill in:
-   - Palpation/Inspection (with "Normal" buttons)
-   - Range of Motion (right/left, active/passive)
-   - Ligamentous Tests
-   - Specialized Tests
+   - Palpation/Inspection (with "Normal" buttons and PDF field mapping display)
+   - Range of Motion (right/left, active/passive) with labels
+   - Ligamentous Tests with labels
+   - Specialized Tests (e.g., Trendelenburg for Hips) with labels
 4. **Muscle Atrophy**: Difference fields auto-calculate
+5. **General Observation**: Fill in weight, height, dominance, and general observation
+6. **Field Mapping Display**: All fields show their associated PDF field names when "Afficher les champs PDF" is enabled
 
 ### Section 12: Sequelae
 
@@ -479,9 +542,12 @@ The application will open at `http://localhost:3000`
 
 #### PDF Export
 - Fills all PDF fields with form data
+- Processes all modules with data (including imported JSON data, not just selected modules)
 - Draws physical exam tables (Range of Motion for Cervical Spine and Lumbar Spine)
 - Normalizes text for WinAnsi encoding
+- **Flattens PDF**: Converts form fields to static text (non-editable) when downloading
 - Downloads as `medical-examination-filled.pdf`
+- **Viewing vs Download**: PDF remains editable when viewing; only flattened on download
 
 #### JSON Export
 - Exports form data with PDF field names as keys
@@ -740,9 +806,10 @@ drawTable(page, tableData, 100, 200, {
 ### Current Limitations
 
 1. **Table Drawing**: Only Range of Motion tables for Cervical Spine and Lumbar Spine are drawn on PDF
-2. **Module Tables**: Other module tables (Shoulders, Elbows, etc.) are displayed in UI but not drawn on PDF yet
+2. **Module Tables**: Other module tables (Shoulders, Elbows, etc.) are displayed in UI but not drawn on PDF yet (data is exported to PDF fields)
 3. **PDF Viewer**: Currently uses iframe for PDF display (doesn't use react-pdf in main component)
 4. **Template System**: Template save/load exists but not fully integrated with current form structure
+5. **PDF Flattening**: Only occurs on download, not when viewing (by design)
 
 ### Future Enhancements
 

@@ -1,23 +1,26 @@
-# 📄 Clinical PDF Form Filler
+# 📄 Medical Form Application - CNESST Medical Evaluation Form
 
-An interactive React application that transforms static clinical PDF forms into fillable digital forms with pixel-perfect data placement, template management, and JSON auto-population.
+An interactive React application designed for healthcare professionals to efficiently fill out CNESST (Commission des normes, de l'équité, de la santé et de la sécurité du travail) medical evaluation forms. Features include voice transcription, automatic PDF field detection, progress-based navigation, and seamless data export to both PDF and JSON formats.
 
 ## ✨ Features
 
 ### 🎯 Core Functionality
-- ✅ **PDF Loading & Display** - Upload and view clinical PDFs as visual backdrops
-- ✅ **Interactive Field Overlay** - Type directly on the PDF with positioned input fields
-- ✅ **Manual Data Entry** - Fill forms manually with real-time validation
-- ✅ **JSON Auto-Population** - Import data from transcript JSON files
-- ✅ **Template Management** - Save and reuse field positions for multiple documents
-- ✅ **Pixel-Perfect Export** - Download filled PDFs matching the original layout exactly
+- ✅ **Progress Bar Navigation** - Visual progress indicator with 13 organized sections
+- ✅ **Automatic PDF Loading** - Default PDF (`Fillable_form.pdf`) loads on startup
+- ✅ **PDF Field Detection** - Automatically detects and maps all PDF form fields
+- ✅ **Voice Transcription** - Real-time speech-to-text for Sections 7 & 8 (Web Speech API)
+- ✅ **Section-Based Form** - Organized into 13 logical sections matching the CNESST form structure
+- ✅ **JSON Import/Export** - Import data from JSON files and export filled forms as JSON
+- ✅ **PDF Export** - Download filled PDFs with flattened form fields (non-editable)
 
 ### 🛠️ Advanced Features
-- **Calibration Mode** - Click-to-capture exact field coordinates
-- **Template Library** - Browse, import, and export saved templates
-- **Fuzzy Matching** - Automatically map JSON fields to form fields
-- **Multi-Page Support** - Navigate through multi-page documents
-- **Zoom Controls** - Adjust view from 50% to 250%
+- **Module-Based Physical Exam** - Dynamic tables for different body parts (Section 9)
+- **Quick Templates** - Pre-filled templates for common physical exam scenarios
+- **Text Splitting** - Automatic text continuation to "Suite" field when character limit reached
+- **Fuzzy Field Matching** - Automatically maps JSON keys to PDF field names with variations
+- **PDF Viewer Toggle** - Show/hide PDF viewer alongside form
+- **Field Mapping Display** - Toggle to show PDF field names next to form inputs
+- **Sequelae Management** - Dynamic 2-row table for current sequelae with individual field mapping
 
 ---
 
@@ -46,92 +49,85 @@ The app will open at `http://localhost:3000`
 
 ## 📖 User Guide
 
-### 1. Upload a PDF Form
+### Basic Workflow
 
-1. Click **"Upload PDF"** button
-2. Select your clinical PDF form
-3. PDF will display in the viewer
+1. **PDF Loads Automatically** - `Fillable_form.pdf` loads on application start
+2. **Navigate Sections** - Use the progress bar at the top to jump between 13 sections
+3. **Fill Form Fields** - Enter data directly into form fields
+4. **Voice Recording** (Sections 7 & 8) - Click "Enregistrer" to start voice transcription
+5. **Physical Exam** (Section 9) - Select modules and fill in examination tables
+6. **Export Data** - Download as PDF or save as JSON
 
-### 2. Calibration Mode (Optional)
+### 13 Form Sections
 
-**Purpose**: Determine exact field coordinates for accurate positioning
+1. **Worker Information** - Name, address, phone, health insurance, etc.
+2. **Doctor Information** - Doctor details, license, contact info
+3. **Mandate** - Evaluation mandate with checkboxes
+4. **Identification** - Age, dominance, employment status
+5. **Antécédents** - Medical history, accidents, allergies, substance use
+6. **Medication** - Current medications
+7. **Historique de faits et évolution** - History of facts and evolution (with voice recording)
+8. **Questionnaire subjectif** - Subjective questionnaire (with voice recording)
+9. **Examen Physique** - Physical examination with module-based tables
+10. **Examens paracliniques** - Paraclinical exams
+11. **Conclusion** - Summary and conclusions
+12. **Séquelles** - Sequelae (current, previous, other deficits, NB)
+13. **Signature** - Doctor signature and title
 
-**How to Use**:
-1. Yellow **"Calibration Mode"** button is active by default
-2. Click anywhere on the PDF
-3. A red dot appears, coordinates show below title
-4. Note coordinates for field positioning
+### Voice Transcription (Sections 7 & 8)
 
-**Switch to Fill Mode**: Click the yellow button → turns green **"Fill Mode"**
+1. **Select Language** - Choose from dropdown (French/English variants)
+2. **Start Recording** - Click "Enregistrer" button
+3. **Speak** - Your words appear in real-time
+4. **View Transcript** - Left panel shows timestamped entries
+5. **Stop Recording** - Click "Arrêter" button
+6. **Text Splitting** - When field reaches character limit, voice continues to "Suite" field automatically
 
-### 3. Fill Form Manually
+### Physical Exam (Section 9)
 
-1. Switch to **Fill Mode** (green button)
-2. Input fields appear overlaid on the PDF
-3. Type data directly into the fields
-4. Fields automatically save as you type
+1. **Select Modules** - Check boxes for body parts to examine
+2. **Quick Templates** - Click template buttons for common examination patterns
+3. **Fill Tables** - For each selected module, fill in:
+   - Palpation/Inspection
+   - Range of Motion (right/left, active/passive)
+   - Ligamentous Tests
+   - Specialized Tests (e.g., Trendelenburg for Hips)
+4. **General Observation** - Weight, height, dominance, general notes
 
-### 4. Import Data from JSON
+### JSON Import
 
-**Quick Import**:
-1. Click **"Import JSON"** (purple button)
-2. Select your JSON file (see `sample-data.json`)
-3. Review the **mapping preview dialog**:
-   - Shows matched fields
-   - Highlights unmapped fields
-   - Displays field values
-4. Click **"Apply to Form"** to populate
+1. **Upload JSON** - Click "Importer JSON" button
+2. **Select File** - Choose JSON file with form data
+3. **Review Mapping** - Preview dialog shows mapped and unmapped fields
+4. **Apply Data** - Click "Apply to Form" to populate all fields
+5. **PDF Auto-fills** - PDF automatically updates with imported data
 
 **JSON Format Example**:
 ```json
 {
-  "lastName": "Smith",
-  "firstName": "John",
-  "dateOfBirth": "1985-06-15",
-  "telephone": "555-1234",
-  "visualAcuity": {
-    "right": {
-      "uncorrected": "6/12"
-    }
-  }
+  "nom": "Doe",
+  "prenom": "John",
+  "age_identification": "45",
+  "accidentsAutres": "SAAQ accident info",
+  "autres": "Other accident info",
+  "code_de_sequelle1": "103 499",
+  "description_de_sequelle1": "Atteintes des tissus mous",
+  "pourcentage1": "2"
 }
 ```
 
-### 5. Template Management
+### Export Options
 
-#### Save a Template
+#### Download PDF
+- Click "Télécharger PDF (Flattened)" button in PDF viewer
+- PDF is filled with all form data
+- Form fields are flattened (converted to static text)
+- Downloads as `medical-examination-filled.pdf`
 
-1. Position all fields correctly
-2. Click **"Save Template"** (indigo button)
-3. Enter a template name
-4. Click **"Save Template"** in dialog
-5. Template saved to browser localStorage
-
-#### Load a Template
-
-1. If templates exist, dropdown appears below header
-2. Select template from **"Load Template"** dropdown
-3. Field positions apply automatically (future: currently logs)
-
-#### Export a Template
-
-1. Select a template from dropdown
-2. Click **"Export"** button
-3. Downloads template as JSON file
-4. Share with team or backup
-
-#### Import a Template
-
-1. Click **"Import Template"** (folder icon)
-2. Select template JSON file
-3. Template added to library
-
-### 6. Download Filled PDF
-
-1. Fill out all required fields
-2. Click **"Download PDF"** (green button)
-3. PDF generates with your data
-4. Downloads as `medical-examination-filled.pdf`
+#### Save as JSON
+- Click "Sauvegarder (JSON)" button
+- Exports all form data with PDF field names as keys
+- Downloads as `form-data.json`
 
 ---
 
@@ -139,108 +135,116 @@ The app will open at `http://localhost:3000`
 
 ### Technology Stack
 
-- **React 19** - UI framework
-- **react-pdf** - PDF rendering and display
-- **pdf-lib** - PDF manipulation and form filling
-- **Tailwind CSS** - Styling
-- **Lucide React** - Icons
-- **LocalStorage** - Template persistence
+- **React 19** - UI framework and component management
+- **pdf-lib** - PDF manipulation, form filling, and flattening
+- **pdfjs-dist** - PDF.js core library for PDF parsing
+- **react-pdf** - React wrapper for PDF.js (used in some components)
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Icon library
+- **Web Speech API** - Browser-native speech recognition
+- **LocalStorage** - Template persistence (via TemplateService)
 
 ### File Structure
 
 ```
 medical-form-app/
+├── public/
+│   ├── Fillable_form.pdf          # Default fillable PDF template
+│   ├── Form.pdf                   # Alternative PDF template
+│   └── Form_filled.pdf            # Alternative PDF template
+│
 ├── src/
-│   ├── components/
-│   │   ├── InteractivePDFForm.jsx    # Main component
-│   │   ├── MedicalFormViewer.jsx     # Original viewer
-│   │   └── MedicalForm.jsx           # Basic form
+│   ├── InteractivePDFForm.jsx     # Main application component (8,350 lines)
+│   ├── pdfService.js               # PDF operations (detect, fill, flatten)
 │   ├── services/
-│   │   ├── pdfService.js             # PDF operations (pdf-lib)
-│   │   ├── templateService.js        # Template CRUD
-│   │   └── jsonImportService.js      # JSON import & mapping
-│   ├── App.js                         # App entry
-│   └── index.js                       # React entry
-├── sample-data.json                   # Example JSON data
-└── README.md                          # This file
+│   │   ├── templateService.js     # Template CRUD operations
+│   │   └── jsonImportService.js   # JSON import and field mapping
+│   ├── App.js                      # Application entry point
+│   └── index.js                    # React DOM rendering
+│
+├── DOCUMENTATION.md                # Complete technical documentation
+├── GITHUB_SETUP.md                 # GitHub publishing guide
+└── README.md                       # This file
 ```
 
 ### Data Flow
 
 ```
-1. Upload PDF → Display with react-pdf
-2. Calibrate → Click for coordinates
-3. Fill Mode → Overlay input fields
-4. Import JSON → Map & populate fields
-5. Export → pdf-lib fills PDF
-6. Download → Flattened PDF
+1. Application Loads → Default PDF (Fillable_form.pdf) loads
+2. PDF Fields Detected → Automatic field detection and mapping
+3. User Interaction:
+   - Fill form fields → Update formData state
+   - Voice recording → Update formData + transcript arrays
+   - Module selection → Update moduleData state
+4. Export Actions:
+   - Download PDF → transformFormDataToPdfFields → fillPdfForm (flattened) → Download
+   - Save JSON → transformFormDataToPdfFields → JSON.stringify → Download
 ```
 
 ---
 
-## 🔧 Configuration
+## 🔧 Key Features Explained
 
-### Field Positions
+### PDF Field Detection
 
-Field positions are defined in `InteractivePDFForm.jsx`:
+The application automatically detects all form fields in the PDF on load using `pdfService.detectPdfFields()`. Fields are mapped to form inputs using fuzzy matching.
 
-```javascript
-const fieldPositions = {
-  lastName: { page: 1, x: 38, y: 169, width: 125, height: 14 },
-  firstName: { page: 1, x: 165, y: 169, width: 125, height: 14 },
-  // ... more fields
-};
-```
+### Field Mapping
 
-**Coordinates**:
-- `page`: PDF page number (1-indexed)
-- `x`, `y`: Top-left corner position (pixels at 100% scale)
-- `width`, `height`: Field dimensions
+Form field names are dynamically mapped to PDF field names using a computed `fieldMapping` object. The mapping handles:
+- Exact matches
+- Case-insensitive matches
+- Partial matches
+- French/English variations
 
-**How to Get Coordinates**:
-1. Use Calibration Mode
-2. Click on field start position
-3. Note X, Y from display
-4. Update `fieldPositions` object
+### Module Data Processing
 
-### Template Structure
+Section 9 (Physical Exam) uses a sophisticated module data processing system:
+- Nested data structure (e.g., `hips.specializedTests.trendelenburg.right`)
+- Automatic PDF field matching using `processModuleDataToPdfFieldsJSON`
+- Processes all modules with data (not just selected ones) when exporting
 
-Templates are stored as JSON:
+### PDF Flattening
 
-```json
-{
-  "id": "template_123456",
-  "name": "Alberta Medical Exam",
-  "description": "Template for 204_MI_1-5.pdf",
-  "pdfName": "204_MI_1-5.pdf",
-  "fields": {
-    "lastName": { "page": 1, "x": 38, "y": 169, "width": 125, "height": 14 }
-  },
-  "createdAt": "2025-10-29T12:00:00Z",
-  "updatedAt": "2025-10-29T12:00:00Z"
-}
-```
+When downloading PDF:
+- Form fields are filled with data
+- PDF is flattened (form fields → static text)
+- PDF becomes non-editable
+
+When viewing PDF:
+- PDF remains editable (not flattened)
+- Allows for corrections and re-filling
 
 ---
 
 ## 🧪 Testing
 
-### Test JSON Import
+### Test JSON Import/Export
 
-1. Use provided `sample-data.json`
-2. Upload Alberta Medical Exam PDF (`204_MI_1-5.pdf`)
-3. Click **"Import JSON"**
-4. Select `sample-data.json`
-5. Verify fields populate correctly
+1. Fill out some form fields manually
+2. Click **"Sauvegarder (JSON)"** to export
+3. Clear the form
+4. Click **"Importer JSON"** and select the exported JSON file
+5. Verify all fields populate correctly
+6. Check that PDF viewer also updates with imported data
 
-### Test Template Save/Load
+### Test Voice Transcription
 
-1. Upload a PDF
-2. Click **"Save Template"**
-3. Name it "Test Template"
-4. Reload page
-5. Template appears in dropdown
-6. Select template from dropdown
+1. Navigate to Section 7 or 8
+2. Select language from dropdown
+3. Click **"Enregistrer"** and speak
+4. Verify text appears in real-time
+5. Check transcript panel shows entries
+6. Stop recording and verify text is saved
+
+### Test Physical Exam Modules
+
+1. Navigate to Section 9
+2. Select a module (e.g., "Hips")
+3. Fill in some table fields
+4. Click **"Sauvegarder (JSON)"** to export
+5. Verify module data is included in JSON export
+6. Import JSON and verify module data is restored
 
 ---
 
@@ -248,19 +252,38 @@ Templates are stored as JSON:
 
 ### PDF Not Loading
 - **Issue**: "Failed to load PDF file"
-- **Solution**: Check browser console, ensure PDF is valid, try smaller file
+- **Solution**: Check browser console, ensure `Fillable_form.pdf` exists in `public/` folder
 
-### Fields Not Aligned
-- **Issue**: Input boxes don't match PDF fields
-- **Solution**: Use Calibration Mode to get exact coordinates, update `fieldPositions`
+### Voice Recording Not Working
+- **Issue**: Recording stops after 6 seconds or words not appearing
+- **Solution**: 
+  - Check microphone permissions in browser settings
+  - Try different language variant
+  - Check browser console for recognition errors
+  - The app automatically restarts recording, but check for errors
 
 ### JSON Import Not Working
-- **Issue**: Fields not populating
-- **Solution**: Check JSON format, ensure field names match (fuzzy matching handles variations)
+- **Issue**: Fields not populating correctly
+- **Solution**: 
+  - Check JSON format matches expected structure
+  - Review mapping preview dialog before applying
+  - Check browser console for mapping logs
+  - Ensure JSON keys match PDF field names (case-insensitive)
 
-### Template Not Saving
-- **Issue**: Template disappears after reload
-- **Solution**: Check browser localStorage isn't disabled, check console for errors
+### PDF Export Issues
+- **Issue**: PDF fields not filled or encoding errors
+- **Solution**: 
+  - Check browser console for field mapping errors
+  - Verify PDF field names match detected fields
+  - Use "Afficher les champs PDF" checkbox to see field mappings
+  - Text normalization is automatic for WinAnsi encoding
+
+### Module Data Not Exporting
+- **Issue**: Section 9 table data not showing in PDF/JSON
+- **Solution**: 
+  - Ensure modules are selected (checkboxes checked)
+  - Check that data is entered in table fields
+  - Verify module data processing logs in browser console
 
 ---
 
@@ -273,31 +296,34 @@ Templates are stored as JSON:
 
 ---
 
-## 📝 PRD Compliance
+## 📝 Current Features Status
 
-| Requirement | Status | Notes |
-|-------------|--------|-------|
-| Load PDFs as backdrops | ✅ Complete | react-pdf integration |
-| Overlay interactive fields | ✅ Complete | Calibration + Fill modes |
-| Manual entry | ✅ Complete | Real-time input |
-| JSON auto-population | ✅ Complete | Fuzzy matching + preview |
-| Template system | ✅ Complete | Save/Load/Import/Export |
-| Pixel-perfect export | ✅ Complete | pdf-lib fills original PDF |
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Progress Bar Navigation | ✅ Complete | 13 sections with free navigation |
+| PDF Field Detection | ✅ Complete | Automatic detection on load |
+| Voice Transcription | ✅ Complete | Sections 7 & 8 with Web Speech API |
+| Module-Based Physical Exam | ✅ Complete | Dynamic tables for all body parts |
+| JSON Import/Export | ✅ Complete | Fuzzy matching + module data parsing |
+| PDF Export with Flattening | ✅ Complete | Flattened on download, editable when viewing |
+| Section 12 Sequelae | ✅ Complete | 2-row table with individual field mapping |
+| Text Splitting | ✅ Complete | Automatic continuation to "Suite" field |
 
-**Compliance Score**: **100%** 🎉
+**Status**: **Production Ready** ✅
 
 ---
 
 ## 🚧 Future Enhancements
 
-- [ ] Cloud template sync
-- [ ] Multi-user collaboration
-- [ ] OCR for scanned forms
-- [ ] AI-powered field detection
-- [ ] E-signature integration
-- [ ] Batch processing
-- [ ] Mobile app (React Native)
-- [ ] Voice-to-text data entry
+- [ ] Draw all physical exam module tables on PDF (currently only Range of Motion for Cervical/Lumbar Spine)
+- [ ] Add more quick templates for physical exam
+- [ ] Improve table drawing for other module types
+- [ ] Add undo/redo functionality
+- [ ] Add form validation with error messages
+- [ ] Add auto-save functionality
+- [ ] Add print preview
+- [ ] Add multi-language support for UI
+- [ ] Add accessibility improvements
 
 ---
 
@@ -320,9 +346,11 @@ Contributions welcome! Please:
 ## 📞 Support
 
 For issues or questions:
-- Check **Troubleshooting** section
+- Check **Troubleshooting** section above
 - Review browser console for errors
-- Check `sample-data.json` for JSON format examples
+- Check **DOCUMENTATION.md** for complete technical documentation
+- Use "Afficher les champs PDF" checkbox to see field mappings
+- Verify JSON format matches expected structure
 
 ---
 
@@ -335,6 +363,13 @@ For issues or questions:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: October 29, 2025  
+**Version**: 2.0.0  
+**Last Updated**: January 2025  
 **Status**: Production Ready ✅
+
+---
+
+## 📚 Additional Documentation
+
+- **[DOCUMENTATION.md](./DOCUMENTATION.md)** - Complete technical documentation with API reference, architecture details, and troubleshooting
+- **[GITHUB_SETUP.md](./GITHUB_SETUP.md)** - Guide for publishing the application to GitHub
