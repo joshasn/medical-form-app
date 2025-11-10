@@ -1,0 +1,37 @@
+{
+  "lastName": "Smith",
+  "firstName": "John",
+  "secondName": "Michael",
+  "dateOfBirth": "1985-06-15",
+  "telephone": "555-123-4567",
+  "address": "123 Main Street",
+  "apartment": "Apt 4B",
+  "city": "Calgary",
+  "province": "AB",
+  "postalCode": "T2P 1A1",
+  "occupation": "Software Engineer",
+  "licenseClass": "Class 5",
+  "licenseNumber": "123456789",
+  "visualAcuity": {
+    "right": {
+      "uncorrected": "6/12",
+      "corrected": "6/6"
+    },
+    "left": {
+      "uncorrected": "6/9",
+      "corrected": "6/6"
+    },
+    "both": {
+      "uncorrected": "6/9",
+      "corrected": "6/6"
+    }
+  },
+  "medicalHistory": {
+    "cardiovascular": "No",
+    "diabetes": "No",
+    "psychiatric": "No",
+    "bloodPressureSystolic": "120",
+    "bloodPressureDiastolic": "80"
+  }
+}
+
