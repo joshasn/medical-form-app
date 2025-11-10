@@ -51,7 +51,7 @@ The app will open at `http://localhost:3000`
 
 ### Basic Workflow
 
-1. **PDF Loads Automatically** - `Fillable_form.pdf` loads on application start
+1. **PDF Loads Automatically** - `Form.pdf` loads on application start
 2. **Navigate Sections** - Use the progress bar at the top to jump between 13 sections
 3. **Fill Form Fields** - Enter data directly into form fields
 4. **Voice Recording** (Sections 7 & 8) - Click "Enregistrer" to start voice transcription
@@ -149,36 +149,36 @@ The app will open at `http://localhost:3000`
 ```
 medical-form-app/
 ├── public/
-│   ├── Fillable_form.pdf          # Default fillable PDF template
-│   ├── Form.pdf                   # Alternative PDF template
-│   └── Form_filled.pdf            # Alternative PDF template
+│   ├── Form.pdf                   # Default PDF template (loaded on startup)
+│   ├── Fillable_form.pdf          # Alternative fillable PDF template
+│   └── Form_filled.pdf            # Alternative filled PDF template
 │
 ├── src/
 │   ├── InteractivePDFForm.jsx     # Main application component (8,350 lines)
-│   ├── pdfService.js               # PDF operations (detect, fill, flatten)
+│   ├── pdfService.js              # PDF operations (detect, fill, flatten)
 │   ├── services/
 │   │   ├── templateService.js     # Template CRUD operations
 │   │   └── jsonImportService.js   # JSON import and field mapping
-│   ├── App.js                      # Application entry point
-│   └── index.js                    # React DOM rendering
+│   ├── App.js                     # Application entry point
+│   └── index.js                   # React DOM rendering
 │
-├── DOCUMENTATION.md                # Complete technical documentation
-├── GITHUB_SETUP.md                 # GitHub publishing guide
-└── README.md                       # This file
+├── DOCUMENTATION.md               # Complete technical documentation
+├── GITHUB_SETUP.md                # GitHub publishing guide
+└── README.md                      # This file
 ```
 
 ### Data Flow
 
 ```
-1. Application Loads → Default PDF (Fillable_form.pdf) loads
+1. Application Loads → Default PDF (Form.pdf) loads
 2. PDF Fields Detected → Automatic field detection and mapping
 3. User Interaction:
    - Fill form fields → Update formData state
    - Voice recording → Update formData + transcript arrays
    - Module selection → Update moduleData state
 4. Export Actions:
-   - Download PDF → transformFormDataToPdfFields → fillPdfForm (flattened) → Download
-   - Save JSON → transformFormDataToPdfFields → JSON.stringify → Download
+   - Download PDF → processModuleDataToPdfFieldsJSON → fillPdfForm (flattened) → Download
+   - Save JSON → processModuleDataToPdfFieldsJSON → JSON.stringify → Download
 ```
 
 ---
@@ -201,8 +201,10 @@ Form field names are dynamically mapped to PDF field names using a computed `fie
 
 Section 9 (Physical Exam) uses a sophisticated module data processing system:
 - Nested data structure (e.g., `hips.specializedTests.trendelenburg.right`)
-- Automatic PDF field matching using `processModuleDataToPdfFieldsJSON`
+- Automatic PDF field matching using `processModuleDataToPdfFieldsJSON` function
 - Processes all modules with data (not just selected ones) when exporting
+- Handles fallback field formats from JSON import (e.g., `hipsspecializedTeststrendelenburgright`)
+- Automatically selects modules when importing JSON data
 
 ### PDF Flattening
 
@@ -252,7 +254,7 @@ When viewing PDF:
 
 ### PDF Not Loading
 - **Issue**: "Failed to load PDF file"
-- **Solution**: Check browser console, ensure `Fillable_form.pdf` exists in `public/` folder
+- **Solution**: Check browser console, ensure `Form.pdf` exists in `public/` folder
 
 ### Voice Recording Not Working
 - **Issue**: Recording stops after 6 seconds or words not appearing
@@ -281,9 +283,10 @@ When viewing PDF:
 ### Module Data Not Exporting
 - **Issue**: Section 9 table data not showing in PDF/JSON
 - **Solution**: 
-  - Ensure modules are selected (checkboxes checked)
+  - Ensure modules are selected (checkboxes checked) OR have data from JSON import
   - Check that data is entered in table fields
   - Verify module data processing logs in browser console
+  - Note: Modules with data are automatically processed even if not manually selected
 
 ---
 
@@ -303,11 +306,13 @@ When viewing PDF:
 | Progress Bar Navigation | ✅ Complete | 13 sections with free navigation |
 | PDF Field Detection | ✅ Complete | Automatic detection on load |
 | Voice Transcription | ✅ Complete | Sections 7 & 8 with Web Speech API |
-| Module-Based Physical Exam | ✅ Complete | Dynamic tables for all body parts |
-| JSON Import/Export | ✅ Complete | Fuzzy matching + module data parsing |
+| Module-Based Physical Exam | ✅ Complete | Dynamic tables for all body parts with labels |
+| JSON Import/Export | ✅ Complete | Fuzzy matching + module data parsing + auto-selection |
 | PDF Export with Flattening | ✅ Complete | Flattened on download, editable when viewing |
 | Section 12 Sequelae | ✅ Complete | 2-row table with individual field mapping |
 | Text Splitting | ✅ Complete | Automatic continuation to "Suite" field |
+| Dropdown Fields (Section 5) | ✅ Complete | Tabac, cannabis, alcool with proper PDF mapping |
+| Section 4 Age Mapping | ✅ Complete | Maps to `age_identification` PDF field |
 
 **Status**: **Production Ready** ✅
 
@@ -366,6 +371,31 @@ For issues or questions:
 **Version**: 2.0.0  
 **Last Updated**: January 2025  
 **Status**: Production Ready ✅
+
+---
+
+## 🔄 Updating the Repository
+
+To update your GitHub repository with changes:
+
+```bash
+# Navigate to project directory
+cd medical-form-app
+
+# Check what changed
+git status
+
+# Add all changes
+git add .
+
+# Commit with message
+git commit -m "Description of your changes"
+
+# Push to GitHub
+git push origin main
+```
+
+For detailed instructions, see **[GITHUB_SETUP.md](./GITHUB_SETUP.md)**.
 
 ---
 
